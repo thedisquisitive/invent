@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>ACS Invent!</h1>
+    <p>Welcome to the ACS Invent! application.</p>
+    {% if current_user.is_logged_in %}
+        <p>Signed in as {{ current_user.username }}</p>
+        <p>Click <a href="/logout">here</a> to logout.</p>
+    {% else %}
+        <p>Click <a href="/login">here</a> to login.</p>
+    {% endif %}
+{% endblock %}
