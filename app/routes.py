@@ -5,6 +5,7 @@ from app.forms import LoginForm, RegistrationForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User
 import sqlalchemy as sa
+import logging
 
 
 
@@ -12,17 +13,20 @@ import sqlalchemy as sa
 @app.route('/index')
 @login_required
 def index():
+    app.logger.info('Index page hit.')
     return render_template('index.html', title='ACS Invent Home Page')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
+        app.logger.info('User already authenticated.')
         return redirect('/index')
     form = LoginForm()
     if form.validate_on_submit():
         user = db.session.scalar(sa.select(User).where(User.username == form.username.data))
         if user is None or not user.check_password(form.password.data):
             flash('Invalid username or password')
+            app.logger.info('Invalid username or password.')
             return redirect('/login')
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
@@ -34,12 +38,14 @@ def login():
 @app.route('/logout')
 def logout():
     logout_user()
+    app.logger.info('User logged out.')
     return redirect('/index')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    flash('Registration function called.')
+    app.logger.info('Register page hit.')
     if current_user.is_authenticated:
+        app.logger.info('User already authenticated.')
         return redirect('/index')
     form = RegistrationForm()
     if form.validate_on_submit():
@@ -47,6 +53,7 @@ def register():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
+        app.logger.info('User registered.')
         flash('Congratulations, you are now a registered user!')
         return redirect('/login')
     return render_template('register.html', title='Register', form=form)

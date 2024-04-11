@@ -15,6 +15,9 @@
             <a href="{{ url_for('logout') }}">Logout</a>
         </div>
         <hr>
+        {% for message in get_flashed_messages() %}
+            <div>{{ message }}</div>
+        {% endfor %}
         {% block content %}{% endblock %}
     </body>
 </html>
